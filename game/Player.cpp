@@ -11086,6 +11086,13 @@ void idPlayer::CalculateRenderView( void ) {
 	if ( g_showviewpos.GetBool() ) {
 		gameLocal.Printf( "%s : %s\n", renderView->vieworg.ToString(), renderView->viewaxis.ToAngles().ToString() );
 	}
+
+	//The fighting game angle and behaviors
+	pm_thirdPerson.SetBool(1);					//Start game in Third Person
+	pm_thirdPersonAngle.SetFloat(-90);			//Side-by-side view
+	pm_thirdPersonHeight.SetFloat(15);			//Raise camera up a bit
+	pm_thirdPersonRange.SetFloat(115);			//Move camera back a bit
+				
 }
 
 /*

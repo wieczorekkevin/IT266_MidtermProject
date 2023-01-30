@@ -1441,7 +1441,7 @@ void idGameLocal::LoadMap( const char *mapName, int randseed ) {
 	aiManager.Clear();
 // RAVEN END
 
-	skipCinematic = false;
+	skipCinematic = false;			
 	inCinematic = false;
 	cinematicSkipTime = 0;
 	cinematicStopTime = 0;
