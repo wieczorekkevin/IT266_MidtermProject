@@ -6236,7 +6236,7 @@ idPlayer::WeaponRisingCallback
 ===============
 */
 void idPlayer::WeaponRisingCallback( void ) {
-	SetAnimState ( ANIMCHANNEL_TORSO, "Torso_RaiseWeapon", 2 );
+	SetAnimState ( ANIMCHANNEL_TORSO, "Torso_RaiseWeapon", 2 );			
 	UpdateState();
 }
 
