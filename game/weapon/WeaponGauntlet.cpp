@@ -96,7 +96,7 @@ void rvWeaponGauntlet::Spawn ( void ) {
 
 	bladeSpinFast	= spawnArgs.GetAngles ( "blade_spinfast" );
 	bladeSpinSlow	= spawnArgs.GetAngles ( "blade_spinslow" );
-	bladeAccel		= SEC2MS ( spawnArgs.GetFloat ( "blade_accel", ".25" ) );
+	bladeAccel		= SEC2MS ( spawnArgs.GetFloat ( "blade_accel", ".25" ) );		
 	
 	range			= spawnArgs.GetFloat ( "range", "32" );
 
@@ -469,6 +469,13 @@ stateResult_t rvWeaponGauntlet::State_Fire ( const stateParms_t& parms ) {
 		STAGE_END,
 		STAGE_END_WAIT
 	};	
+	
+	//Checking Player Location
+	idVec3 origin;
+	idMat3 axis;
+	gameLocal.GetLocalPlayer()->GetPosition(origin, axis);
+	gameLocal.Printf("%f, %f, %f\n", origin.x, origin.y, origin.z);
+
 	switch ( parms.stage ) {
 		case STAGE_START:	
 			PlayAnim ( ANIMCHANNEL_ALL, "attack_start", parms.blendFrames );

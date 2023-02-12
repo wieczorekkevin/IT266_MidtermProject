@@ -6236,7 +6236,7 @@ idPlayer::WeaponRisingCallback
 ===============
 */
 void idPlayer::WeaponRisingCallback( void ) {
-	SetAnimState ( ANIMCHANNEL_TORSO, "Torso_RaiseWeapon", 2 );			
+	SetAnimState ( ANIMCHANNEL_TORSO, "Torso_RaiseWeapon", 2);	//2 to 0
 	UpdateState();
 }
 
@@ -11092,6 +11092,7 @@ void idPlayer::CalculateRenderView( void ) {
 	pm_thirdPersonAngle.SetFloat(-90);			//Side-by-side view
 	pm_thirdPersonHeight.SetFloat(15);			//Raise camera up a bit
 	pm_thirdPersonRange.SetFloat(115);			//Move camera back a bit
+
 				
 }
 
