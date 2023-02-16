@@ -10790,6 +10790,10 @@ void idPlayer::OffsetThirdPersonView( float angle, float range, float height, bo
 	}
 
 	focusPoint = origin + angles.ToForward() * THIRD_PERSON_FOCUS_DISTANCE;
+	//focusPoint.x = 10325;
+	//focusPoint.y = -6962;
+	//focusPoint.z = -61;
+
 	focusPoint.z += height;
 	view = origin;
 // RAVEN BEGIN
