@@ -10790,9 +10790,6 @@ void idPlayer::OffsetThirdPersonView( float angle, float range, float height, bo
 	}
 
 	focusPoint = origin + angles.ToForward() * THIRD_PERSON_FOCUS_DISTANCE;
-	//focusPoint.x = 10325;
-	//focusPoint.y = -6962;
-	//focusPoint.z = -61;
 
 	focusPoint.z += height;
 	view = origin;
@@ -10843,6 +10840,12 @@ void idPlayer::OffsetThirdPersonView( float angle, float range, float height, bo
 
 	angles.pitch = - RAD2DEG( idMath::ATan( focusPoint.z, focusDist ) );
 	angles.yaw -= angle;
+
+	//kmw: Lock camera angle
+	view.x = 9925;
+	view.y = -7900;
+	view.z = 200;
+	angles.pitch = -3;
 
 	renderView->vieworg = view;
 	renderView->viewaxis = angles.ToMat3() * physicsObj.GetGravityAxis();
