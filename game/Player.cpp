@@ -8612,7 +8612,12 @@ void idPlayer::PerformImpulse( int impulse ) {
 		
 		//kmw: Punch
 		case IMPULSE_41: {
-			gameLocal.Printf("PUNCH!\n");
+			if (physicsObj.IsCrouching()) {
+				gameLocal.Printf("LOW PUNCH!\n");
+			}
+			else {
+				gameLocal.Printf("MED/HIGH PUNCH!\n");
+			}
 			SetAnimState(ANIMCHANNEL_TORSO, "Torso_RaiseWeapon", 2);	//2 to 0
 			UpdateState();
 			break;
