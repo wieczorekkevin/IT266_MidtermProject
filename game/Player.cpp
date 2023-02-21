@@ -8609,6 +8609,14 @@ void idPlayer::PerformImpulse( int impulse ) {
  			LastWeapon();
  			break;
  		}
+		
+		//kmw: Punch
+		case IMPULSE_41: {
+			gameLocal.Printf("PUNCH!\n");
+			SetAnimState(ANIMCHANNEL_TORSO, "Torso_RaiseWeapon", 2);	//2 to 0
+			UpdateState();
+			break;
+		}
 	} 
 
 //RAVEN BEGIN

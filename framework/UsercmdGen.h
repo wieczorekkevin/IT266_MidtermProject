@@ -72,6 +72,9 @@ const int IMPULSE_28			= 28;			// vote yes
 const int IMPULSE_29			= 29;			// vote no
 const int IMPULSE_40			= 40;			// repeast last radio chatter
 
+//kmw: new impulses
+const int IMPULSE_41			= 41;			// PUNCH
+
 // RAVEN BEGIN
 // bdube: added flashlight
 const int IMPULSE_50			= 50;			// activate flashlight
