@@ -8620,6 +8620,18 @@ void idPlayer::PerformImpulse( int impulse ) {
 			}
 			SetAnimState(ANIMCHANNEL_TORSO, "Torso_RaiseWeapon", 2);	//2 to 0
 			UpdateState();
+			weapon->BeginAttack();
+			break;
+		}
+
+		//kmw: Block
+		case IMPULSE_42: {
+			if (physicsObj.IsCrouching()) {
+				gameLocal.Printf("LOW BLOCK!\n");
+			}
+			else {
+				gameLocal.Printf("MED/HIGH BLOCK!\n");
+			}
 			break;
 		}
 	} 
