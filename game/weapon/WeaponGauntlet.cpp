@@ -473,8 +473,8 @@ stateResult_t rvWeaponGauntlet::State_Fire ( const stateParms_t& parms ) {
 	//kmw: Checking Player Location
 	idVec3 origin;
 	idMat3 axis;
-	gameLocal.GetLocalPlayer()->GetPosition(origin, axis);
-	gameLocal.Printf("%f, %f, %f\n", origin.x, origin.y, origin.z);
+	//gameLocal.GetLocalPlayer()->GetPosition(origin, axis);
+	//gameLocal.Printf("%f, %f, %f\n", origin.x, origin.y, origin.z);
 
 
 	switch ( parms.stage ) {

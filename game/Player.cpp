@@ -8614,13 +8614,21 @@ void idPlayer::PerformImpulse( int impulse ) {
 		case IMPULSE_41: {
 			if (physicsObj.IsCrouching()) {
 				gameLocal.Printf("LOW PUNCH!\n");
+
+
+				//kmw testing
+				idMoveable *testEntity = NULL;
+				testEntity->SetModel("mcc_char_kane_strogg");
+				testEntity->Spawn();
+
+				
+
 			}
 			else {
 				gameLocal.Printf("MED/HIGH PUNCH!\n");
 			}
 			SetAnimState(ANIMCHANNEL_TORSO, "Torso_RaiseWeapon", 2);	//2 to 0
 			UpdateState();
-			weapon->BeginAttack();
 			break;
 		}
 
