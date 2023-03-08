@@ -8617,12 +8617,23 @@ void idPlayer::PerformImpulse( int impulse ) {
 
 
 				//kmw testing
-				idMoveable *testEntity = NULL;
-				testEntity->SetModel("mcc_char_kane_strogg");
-				testEntity->Spawn();
+				const char* key, * value;
+				int			i;
+				idVec3		org;
+				idPlayer* player;
+				idDict		dict;
+
+				player = gameLocal.GetLocalPlayer();
+				dict.Set("classname", "char_marine");
+				dict.Set("angle", va("0"));
+				org = player->GetPhysics()->GetOrigin() + idAngles(0,0,0).ToForward() + idVec3(0, 0, 1);
+				dict.Set("origin", org.ToString());
+				dict.Set(0, 0);
+
+				idEntity* newEnt = NULL;
+				gameLocal.SpawnEntityDef(dict, &newEnt);
 
 				
-
 			}
 			else {
 				gameLocal.Printf("MED/HIGH PUNCH!\n");
