@@ -8612,19 +8612,20 @@ void idPlayer::PerformImpulse( int impulse ) {
 		
 		//kmw: Punch
 		case IMPULSE_41: {
+
+			const char* key, * value;
+			int			i;
+			idVec3		org;
+			idPlayer* player;
+			idDict		dict;
+
 			if (physicsObj.IsCrouching()) {
 				gameLocal.Printf("LOW PUNCH!\n");
 
 
 				//kmw testing
-				const char* key, * value;
-				int			i;
-				idVec3		org;
-				idPlayer* player;
-				idDict		dict;
-
 				player = gameLocal.GetLocalPlayer();
-				dict.Set("classname", "char_marine");
+				dict.Set("classname", "moveable_gib_skull");
 				dict.Set("angle", va("0"));
 				org = player->GetPhysics()->GetOrigin() + idAngles(0,0,0).ToForward() + idVec3(0, 0, 1);
 				dict.Set("origin", org.ToString());
