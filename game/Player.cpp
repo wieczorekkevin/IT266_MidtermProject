@@ -8425,6 +8425,10 @@ void idPlayer::GenerateImpulseForBuyAttempt( const char* itemName ) {
 // RITUAL END
 
 
+//kmw Checking if moves are out
+int attackOut = 0;
+
+
 /*
 ==============
 idPlayer::PerformImpulse
@@ -8615,25 +8619,44 @@ void idPlayer::PerformImpulse( int impulse ) {
 
 			const char* key, * value;
 			int			i;
-			idVec3		org;
+			idVec3		org, size;
 			idPlayer* player;
 			idDict		dict;
+			float punchCooldown;
 
 			if (physicsObj.IsCrouching()) {
 				gameLocal.Printf("LOW PUNCH!\n");
 
+				//kmw Low Punch Hitbox
+				if (attackOut == 0) {
+					attackOut = 1;
+					player = gameLocal.GetLocalPlayer();
+					dict.Set("classname", "moveable_gib_skull");
+					dict.Set("angle", va("0"));
+					org = player->GetPhysics()->GetOrigin() + idAngles(0, 0, 0).ToForward() + idVec3(50, 0, 20);
+					dict.Set("origin", org.ToString());
+					dict.Set(0, 0);
+					dict.SetBool("nodrop", true);
+					dict.SetBool("notPushable", true);
+					size.x = 10;
+					size.y = 10;
+					size.z = 10;
+					dict.Set("size", size.ToString());
+					
+					idEntity* newEnt = NULL;
+					gameLocal.SpawnEntityDef(dict, &newEnt);
+					punchCooldown = gameLocal.time + 10000;
 
-				//kmw testing
-				player = gameLocal.GetLocalPlayer();
-				dict.Set("classname", "moveable_gib_skull");
-				dict.Set("angle", va("0"));
-				org = player->GetPhysics()->GetOrigin() + idAngles(0,0,0).ToForward() + idVec3(0, 0, 1);
-				dict.Set("origin", org.ToString());
-				dict.Set(0, 0);
-
-				idEntity* newEnt = NULL;
-				gameLocal.SpawnEntityDef(dict, &newEnt);
-
+					//kmw work on this
+					if (gameLocal.time > punchCooldown) {
+						gameLocal.Printf("canattack!\n");
+						idEntity* ent = newEnt;
+						delete ent;
+						attackOut = 0;
+					}
+					
+					
+				}
 				
 			}
 			else {
