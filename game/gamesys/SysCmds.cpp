@@ -3022,6 +3022,48 @@ void Cmd_ShuffleTeams_f( const idCmdArgs& args ) {
 	gameLocal.mpGame.ShuffleTeams();
 }
 
+//kmw Training Mode Commands
+void Cmd_SpawnDummy(const idCmdArgs& args) {
+	//usage: "training"
+
+	if (dummyExists == 1) {
+		idEntity* ent = gameLocal.FindEntity(dummyEntName);
+		if (!ent) {
+			gameLocal.Printf("entity not found\n");
+		}
+		else {
+			delete ent;
+			gameLocal.Printf("deleted entity %s\n", dummyEntName);
+			dummyExists = 0;
+			isStanding = 0;
+			isCrouching = 0;
+			isBlocking = 0;
+		}
+	}
+	idVec3		org;
+	idPlayer* player;
+	idDict		dict;
+
+	player = gameLocal.GetLocalPlayer();
+
+	dict.Set("classname", "mcc_char_kane_strogg");
+	dict.Set("angle", va("180"));
+	org = player->GetPhysics()->GetOrigin() + idAngles(0, 0, 0).ToForward() + idVec3(100, 0, 0);
+	dict.Set("origin", org.ToString());
+	dict.Set(0, 0);
+	dict.SetBool("notPushable", true);
+
+	idEntity* dummyEnt = NULL;
+	gameLocal.SpawnEntityDef(dict, &dummyEnt);
+	if (dummyEnt) {
+		gameLocal.Printf("spawned entity '%s'\n", dummyEnt->name.c_str());
+		dummyEntName = dummyEnt->name.c_str();
+		dummyExists = 1;
+		isStanding = 1;
+	}
+
+}
+
 #ifndef _FINAL
 void Cmd_ClientOverflowReliable_f( const idCmdArgs& args ) {
 	idBitMsg	outMsg;
@@ -3233,6 +3275,9 @@ void idGameLocal::InitConsoleCommands( void ) {
 	cmdSystem->AddCommand( "buy",					Cmd_BuyItem_f,				CMD_FL_GAME,				"Buy an item (if in a buy zone and the game type supports it)" );
 // RITUAL END
 
+//kmw Training Mode Dummy Commands
+	cmdSystem->AddCommand( "training",				Cmd_SpawnDummy,				CMD_FL_GAME|CMD_FL_CHEAT,				"Spawn training mode dummy");
+
 }
 
 /*
@@ -3243,3 +3288,4 @@ idGameLocal::ShutdownConsoleCommands
 void idGameLocal::ShutdownConsoleCommands( void ) {
 	cmdSystem->RemoveFlaggedCommands( CMD_FL_GAME );
 }
+

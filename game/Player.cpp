@@ -29,10 +29,83 @@
 // RAVEN END
 
 
-
-
 idCVar net_predictionErrorDecay( "net_predictionErrorDecay", "112", CVAR_FLOAT | CVAR_GAME | CVAR_NOCHEAT, "time in milliseconds it takes to fade away prediction errors", 0.0f, 200.0f );
 idCVar net_showPredictionError( "net_showPredictionError", "-1", CVAR_INTEGER | CVAR_GAME | CVAR_NOCHEAT, "show prediction errors for the given client", -1, MAX_CLIENTS );
+
+
+//kmw: Globals
+int attackOut = 0;
+int entDeleted = 1;
+float cooldown = 0.0;
+const char* lastEnt;
+
+//kmw: Functions
+
+//kmw Delete Last Entity
+void deleteEntity(const char* entName, int entDeleted) {
+	if (entDeleted == 0) {
+		idEntity* ent = gameLocal.FindEntity(entName);
+		if (!ent) {
+			gameLocal.Printf("entity not found\n");
+		}
+		else {
+			delete ent;
+			gameLocal.Printf("deleted entity %s\n", entName);
+			attackOut = 0;
+			entDeleted = 1;
+			
+		}
+	}
+	else {
+		gameLocal.Printf("No entity to delete\n");
+	}
+}
+
+//kmw Cooldown Function
+void cooldownFunc(const char* entName, int attackType) {
+
+	switch (attackType) {
+	case 1:
+		cooldown = gameLocal.time + 1500;
+		break;
+	case -1:
+		//Attack still out
+		break;
+	}
+	if (gameLocal.time > cooldown) {
+		deleteEntity(entName, entDeleted);
+	}
+}
+
+//kmw Low Punch Function
+void lowPunchFunc(idPlayer* player, idDict dict, idVec3 org, idVec3 size) {
+	int attackType = 1;
+
+	attackOut = 1;
+	entDeleted = 0;
+
+	dict.Set("classname", "moveable_gib_skull");
+	dict.Set("angle", va("0"));
+	org = player->GetPhysics()->GetOrigin() + idAngles(0, 0, 0).ToForward() + idVec3(50, 0, 20);
+	dict.Set("origin", org.ToString());
+	dict.Set(0, 0);
+	dict.SetBool("nodrop", true);
+	dict.SetBool("notPushable", true);
+	size.x = 100;
+	size.y = 100;
+	size.z = 100;
+	dict.Set("size", size.ToString());
+
+	idEntity* newEnt = NULL;
+	gameLocal.SpawnEntityDef(dict, &newEnt);
+	if (newEnt) {
+		gameLocal.Printf("spawned entity '%s'\n", newEnt->name.c_str());
+		lastEnt = newEnt->name.c_str();
+		cooldownFunc(newEnt->name.c_str(), attackType);
+	}
+
+}
+
 
 
 /*
@@ -192,6 +265,9 @@ nextWeaponCombo_t weaponComboChart[12] = {
 const idVec4 marineHitscanTint( 0.69f, 1.0f, 0.4f, 1.0f );
 const idVec4 stroggHitscanTint( 1.0f, 0.5f, 0.0f, 1.0f );
 const idVec4 defaultHitscanTint( 0.4f, 1.0f, 0.4f, 1.0f );
+
+
+
 
 /*
 ==============
@@ -8424,11 +8500,6 @@ void idPlayer::GenerateImpulseForBuyAttempt( const char* itemName ) {
 }
 // RITUAL END
 
-
-//kmw Checking if moves are out
-int attackOut = 0;
-
-
 /*
 ==============
 idPlayer::PerformImpulse
@@ -8478,6 +8549,11 @@ void idPlayer::PerformImpulse( int impulse ) {
 	bool updateVisuals = false;
 #endif
 //RAVEN END
+
+	//kmw Remove any entity when performing another action
+	if ( (impulse == IMPULSE_41) || (impulse == IMPULSE_42) ) {
+		deleteEntity(lastEnt, entDeleted);
+	}
 
 	switch( impulse ) {
 		case IMPULSE_13: {
@@ -8617,53 +8693,34 @@ void idPlayer::PerformImpulse( int impulse ) {
 		//kmw: Punch
 		case IMPULSE_41: {
 
-			const char* key, * value;
-			int			i;
 			idVec3		org, size;
-			idPlayer* player;
-			idDict		dict;
-			float punchCooldown;
+			idPlayer*	player;
+			idDict		dict;    
 
+			player = gameLocal.GetLocalPlayer();
 			if (physicsObj.IsCrouching()) {
 				gameLocal.Printf("LOW PUNCH!\n");
 
-				//kmw Low Punch Hitbox
+				//kmw Low Punch Impulse
 				if (attackOut == 0) {
-					attackOut = 1;
-					player = gameLocal.GetLocalPlayer();
-					dict.Set("classname", "moveable_gib_skull");
-					dict.Set("angle", va("0"));
-					org = player->GetPhysics()->GetOrigin() + idAngles(0, 0, 0).ToForward() + idVec3(50, 0, 20);
-					dict.Set("origin", org.ToString());
-					dict.Set(0, 0);
-					dict.SetBool("nodrop", true);
-					dict.SetBool("notPushable", true);
-					size.x = 10;
-					size.y = 10;
-					size.z = 10;
-					dict.Set("size", size.ToString());
-					
-					idEntity* newEnt = NULL;
-					gameLocal.SpawnEntityDef(dict, &newEnt);
-					punchCooldown = gameLocal.time + 10000;
-
-					//kmw work on this
-					if (gameLocal.time > punchCooldown) {
-						gameLocal.Printf("canattack!\n");
-						idEntity* ent = newEnt;
-						delete ent;
-						attackOut = 0;
+					SetAnimState(ANIMCHANNEL_TORSO, "Torso_RaiseWeapon", 2);	//2 to 0
+					UpdateState();
+					lowPunchFunc(player, dict, org, size);
+				}
+				else {
+					cooldownFunc(lastEnt, -1);
+					if (entDeleted == 1) {
+						SetAnimState(ANIMCHANNEL_TORSO, "Torso_RaiseWeapon", 2);	//2 to 0
+						UpdateState();
+						lowPunchFunc(player, dict, org, size);
 					}
-					
-					
 				}
 				
 			}
 			else {
 				gameLocal.Printf("MED/HIGH PUNCH!\n");
 			}
-			SetAnimState(ANIMCHANNEL_TORSO, "Torso_RaiseWeapon", 2);	//2 to 0
-			UpdateState();
+			
 			break;
 		}
 
@@ -14161,3 +14218,5 @@ int idPlayer::CanSelectWeapon(const char* weaponName)
 }
 
 // RITUAL END
+
+

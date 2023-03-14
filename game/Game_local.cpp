@@ -15,6 +15,14 @@
 
 //#define UI_DEBUG	1
 
+
+//kmw GLOBALS
+const char* dummyEntName;
+int dummyExists = 0;
+int isStanding = 1;
+int isCrouching = 0;
+int isBlocking = 0;
+
 #ifdef GAME_DLL
 
 idSys *						sys = NULL;
@@ -8506,3 +8514,4 @@ void operator delete[]( void *p ) {
 #endif	// #else #ifdef ID_DEBUG_MEMORY
 #endif	// #if defined(ID_REDIRECT_NEWDELETE) || defined(_RV_MEM_SYS_SUPPORT)
 // RAVEN END
+

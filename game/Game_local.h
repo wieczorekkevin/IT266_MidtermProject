@@ -63,6 +63,14 @@ class idThread;
 class idEditEntities;
 class idLocationEntity;
 
+
+//kmw GLOBALS
+extern const char* dummyEntName;
+extern int dummyExists;
+extern int isStanding;
+extern int isCrouching;
+extern int isBlocking;
+
 // RAVEN BEGIN
 // dluetscher: reduced max clients for memory usage
 #ifdef _XENON
