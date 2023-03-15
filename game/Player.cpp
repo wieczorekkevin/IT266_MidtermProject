@@ -108,13 +108,41 @@ void lowPunchFunc(idPlayer* player, idDict dict, idVec3 org, idVec3 size) {
 		gameLocal.Printf("spawned entity '%s'\n", newEnt->name.c_str());
 		lastEnt = newEnt->name.c_str();
 		cooldownFunc(newEnt->name.c_str(), attackType);
-
 	}
-
-	
-
 }
 
+//kmw High Punch Function
+void highPunchFunc(idPlayer* player, idDict dict, idVec3 org, idVec3 size) {
+	int attackType = 1;
+
+	attackOut = 1;
+	entDeleted = 0;
+
+	dict.Set("classname", "moveable_gib_skull");
+	dict.Set("angle", va("0"));
+	if (sideP1 == 0) {
+		org = player->GetPhysics()->GetOrigin() + idAngles(0, 0, 0).ToForward() + idVec3(-50, 0, 50);
+	}
+	else if (sideP1 == 1) {
+		org = player->GetPhysics()->GetOrigin() + idAngles(0, 0, 0).ToForward() + idVec3(50, 0, 50);
+	}
+	dict.Set("origin", org.ToString());
+	dict.Set(0, 0);
+	dict.SetBool("nodrop", true);
+	dict.SetBool("notPushable", true);
+	size.x = 100;
+	size.y = 100;
+	size.z = 100;
+	dict.Set("size", size.ToString());
+
+	idEntity* newEnt = NULL;
+	gameLocal.SpawnEntityDef(dict, &newEnt);
+	if (newEnt) {
+		gameLocal.Printf("spawned entity '%s'\n", newEnt->name.c_str());
+		lastEnt = newEnt->name.c_str();
+		cooldownFunc(newEnt->name.c_str(), attackType);
+	}
+}
 
 
 /*
@@ -8707,10 +8735,11 @@ void idPlayer::PerformImpulse( int impulse ) {
 			idDict		dict;    
 
 			player = gameLocal.GetLocalPlayer();
+
+			//kmw Low Punch
 			if (physicsObj.IsCrouching()) {
 				gameLocal.Printf("LOW PUNCH!\n");
 
-				//kmw Low Punch Impulse
 				if (attackOut == 0) {
 					SetAnimState(ANIMCHANNEL_TORSO, "Torso_RaiseWeapon", 2);	//2 to 0
 					UpdateState();
@@ -8724,10 +8753,24 @@ void idPlayer::PerformImpulse( int impulse ) {
 						lowPunchFunc(player, dict, org, size);
 					}
 				}
-				
 			}
+
+			//kmw High Punch
 			else {
 				gameLocal.Printf("MED/HIGH PUNCH!\n");
+				if (attackOut == 0) {
+					SetAnimState(ANIMCHANNEL_TORSO, "Torso_RaiseWeapon", 2);	//2 to 0
+					UpdateState();
+					highPunchFunc(player, dict, org, size);
+				}
+				else {
+					cooldownFunc(lastEnt, -1);
+					if (entDeleted == 1) {
+						SetAnimState(ANIMCHANNEL_TORSO, "Torso_RaiseWeapon", 2);	//2 to 0
+						UpdateState();
+						highPunchFunc(player, dict, org, size);
+					}
+				}
 			}
 			
 			break;
@@ -11018,8 +11061,8 @@ void idPlayer::OffsetThirdPersonView( float angle, float range, float height, bo
 				deleteEntity(lastEnt, entDeleted);
 			}
 
+			//Remove training dummy
 			if (dummyEnt->health <= 0) {
-				//idEntity* ent = gameLocal.FindEntity(dummyEntName);
 				delete dummyEnt;
 				dummyCoords.x = 0;
 				dummyCoords.y = 0;
