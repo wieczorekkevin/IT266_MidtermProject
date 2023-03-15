@@ -38,6 +38,7 @@ int attackOut = 0;
 int entDeleted = 1;
 float cooldown = 0.0;
 const char* lastEnt;
+int sideP1 = 1;		//1 is left side, 0 is right side
 
 //kmw: Functions
 
@@ -86,7 +87,12 @@ void lowPunchFunc(idPlayer* player, idDict dict, idVec3 org, idVec3 size) {
 
 	dict.Set("classname", "moveable_gib_skull");
 	dict.Set("angle", va("0"));
-	org = player->GetPhysics()->GetOrigin() + idAngles(0, 0, 0).ToForward() + idVec3(50, 0, 20);
+	if (sideP1 == 0) {
+		org = player->GetPhysics()->GetOrigin() + idAngles(0, 0, 0).ToForward() + idVec3(-50, 0, 20);
+	}
+	else if (sideP1 == 1) {
+		org = player->GetPhysics()->GetOrigin() + idAngles(0, 0, 0).ToForward() + idVec3(50, 0, 20);
+	}
 	dict.Set("origin", org.ToString());
 	dict.Set(0, 0);
 	dict.SetBool("nodrop", true);
@@ -10985,14 +10991,15 @@ void idPlayer::OffsetThirdPersonView( float angle, float range, float height, bo
 	player = gameLocal.GetLocalPlayer();
 	playerPos = player->GetPhysics()->GetOrigin();
 
+	//kmw Side switch
 	if ((dummyExists == 1) && (playerPos.x > dummyCoords.x)) {
-		gameLocal.Printf("got here\n");
-		idAngles angleOffset = player->spawnArgs.GetAngles("angles");
-		idMat3 rotate = angleOffset.ToMat3();
-		idMat3 newAxis = rotate * axis;
-		player->SetAxis(newAxis);
+		sideP1 = 0;
+	}
+	else {
+		sideP1 = 1;
 	}
 
+	//kmw Check if attack damages
 	if ((attackOut == 1) && (dummyExists == 1)) {
 		idEntity* dummyEnt = gameLocal.FindEntity(dummyEntName);
 		idEntity* attackEnt = gameLocal.FindEntity(lastEnt);
@@ -11009,6 +11016,15 @@ void idPlayer::OffsetThirdPersonView( float angle, float range, float height, bo
 				gameLocal.Printf("Health is %i\n", dummyEnt->health);
 				dummyEnt->health -= 10;
 				deleteEntity(lastEnt, entDeleted);
+			}
+
+			if (dummyEnt->health <= 0) {
+				//idEntity* ent = gameLocal.FindEntity(dummyEntName);
+				delete dummyEnt;
+				dummyCoords.x = 0;
+				dummyCoords.y = 0;
+				dummyCoords.z = 0;
+				dummyExists = 0;
 			}
 		}
 	}
