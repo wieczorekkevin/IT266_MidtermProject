@@ -70,6 +70,7 @@ extern int dummyExists;
 extern int isStanding;
 extern int isCrouching;
 extern int isBlocking;
+extern idVec3 dummyCoords;
 
 // RAVEN BEGIN
 // dluetscher: reduced max clients for memory usage

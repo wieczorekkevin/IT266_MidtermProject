@@ -22,6 +22,7 @@ int dummyExists = 0;
 int isStanding = 1;
 int isCrouching = 0;
 int isBlocking = 0;
+idVec3 dummyCoords;
 
 #ifdef GAME_DLL
 

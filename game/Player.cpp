@@ -102,7 +102,10 @@ void lowPunchFunc(idPlayer* player, idDict dict, idVec3 org, idVec3 size) {
 		gameLocal.Printf("spawned entity '%s'\n", newEnt->name.c_str());
 		lastEnt = newEnt->name.c_str();
 		cooldownFunc(newEnt->name.c_str(), attackType);
+
 	}
+
+	
 
 }
 
@@ -10902,6 +10905,9 @@ void idPlayer::OffsetThirdPersonView( float angle, float range, float height, bo
 	idAngles		angles;
 	idMat3			axis;
 	idBounds		bounds;
+	//my vars
+	idPlayer*		player;
+	idVec3			playerPos;
 
 	angles = viewAngles;
 	GetViewPos( origin, axis );
@@ -10975,6 +10981,38 @@ void idPlayer::OffsetThirdPersonView( float angle, float range, float height, bo
 	renderView->vieworg = view;
 	renderView->viewaxis = angles.ToMat3() * physicsObj.GetGravityAxis();
 	renderView->viewID = 0;
+
+	player = gameLocal.GetLocalPlayer();
+	playerPos = player->GetPhysics()->GetOrigin();
+
+	if ((dummyExists == 1) && (playerPos.x > dummyCoords.x)) {
+		gameLocal.Printf("got here\n");
+		idAngles angleOffset = player->spawnArgs.GetAngles("angles");
+		idMat3 rotate = angleOffset.ToMat3();
+		idMat3 newAxis = rotate * axis;
+		player->SetAxis(newAxis);
+	}
+
+	if ((attackOut == 1) && (dummyExists == 1)) {
+		idEntity* dummyEnt = gameLocal.FindEntity(dummyEntName);
+		idEntity* attackEnt = gameLocal.FindEntity(lastEnt);
+
+		if ((dummyEnt) && (attackEnt)) {
+			idVec3 attackCoords = attackEnt->GetPhysics()->GetOrigin();
+
+			gameLocal.Printf("attackCoord: %f\n", attackCoords.x);
+			gameLocal.Printf("dummyCoord: %f\n", dummyCoords.x);
+
+			float distanceBetween = attackCoords.x - dummyCoords.x;
+
+			if ((distanceBetween <= 15) && (distanceBetween > -16)) {
+				gameLocal.Printf("Health is %i\n", dummyEnt->health);
+				dummyEnt->health -= 10;
+				deleteEntity(lastEnt, entDeleted);
+			}
+		}
+	}
+	
 }
 
 /*

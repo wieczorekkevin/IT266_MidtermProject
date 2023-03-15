@@ -3050,8 +3050,11 @@ void Cmd_SpawnDummy(const idCmdArgs& args) {
 	dict.Set("angle", va("180"));
 	org = player->GetPhysics()->GetOrigin() + idAngles(0, 0, 0).ToForward() + idVec3(100, 0, 0);
 	dict.Set("origin", org.ToString());
+	dict.Set("health", "100");
 	dict.Set(0, 0);
 	dict.SetBool("notPushable", true);
+
+	dummyCoords = org;
 
 	idEntity* dummyEnt = NULL;
 	gameLocal.SpawnEntityDef(dict, &dummyEnt);
