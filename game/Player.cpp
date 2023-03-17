@@ -156,7 +156,7 @@ void highPunchFunc(idPlayer* player, idDict dict, idVec3 org, idVec3 size) {
 }
 
 //kmw Special Attack Function
-void specialFunc(idPlayer* player, idDict dict, idVec3 org, idVec3 size, int character) {
+void specialFunc(idPlayer* player, idDict dict, idVec3 org, idVec3 size, int character, int specialFlag) {
 	int attackType = 2;
 	int count = 0;
 
@@ -188,17 +188,27 @@ void specialFunc(idPlayer* player, idDict dict, idVec3 org, idVec3 size, int cha
 
 		if (dummyExists == 1) {
 			if (sideP1 == 1) {
-				pos.x = dummyCoords.x + 40;
+				if (specialFlag == 0) {
+					pos.x = dummyCoords.x + 40;
+				}
+				else {
+					pos.x = dummyCoords.x - 40;
+				}
 			}
 			else if (sideP1 == 0) {
-				pos.x = dummyCoords.x - 40;
+				if (specialFlag == 0) {
+					pos.x = dummyCoords.x - 40;
+				}
+				else {
+					pos.x = dummyCoords.x + 40;
+				}
 			}
 		}
 		else if (dummyExists == 0) {
-			if (sideP1 == 1) {
+			if (specialFlag == 0) {
 				pos.x += 70;
 			}
-			else if (sideP1 == 0) {
+			else if (specialFlag == 1) {
 				pos.x -= 70;
 			}
 		}
@@ -8913,14 +8923,25 @@ void idPlayer::PerformImpulse( int impulse ) {
 			if (attackOut == 0) {
 				SetAnimState(ANIMCHANNEL_TORSO, "Torso_RaiseWeapon", 2);	//2 to 0
 				UpdateState();
-				specialFunc(player, dict, org, size, characterSelect);
+				if (physicsObj.IsCrouching()) {
+					specialFunc(player, dict, org, size, characterSelect, 1);
+				}
+				else {
+					specialFunc(player, dict, org, size, characterSelect, 0);
+				}
+				
 			}
 			else {
 				cooldownFunc(lastEnt, 2);
 				if (entDeleted == 1) {
 					SetAnimState(ANIMCHANNEL_TORSO, "Torso_RaiseWeapon", 2);	//2 to 0
 					UpdateState();
-					specialFunc(player, dict, org, size, characterSelect);
+					if (physicsObj.IsCrouching()) {
+						specialFunc(player, dict, org, size, characterSelect, 1);
+					}
+					else {
+						specialFunc(player, dict, org, size, characterSelect, 0);
+					}
 				}
 			}
 
@@ -11198,13 +11219,25 @@ void idPlayer::OffsetThirdPersonView( float angle, float range, float height, bo
 
 			if ((distanceBetween <= 15) && (distanceBetween > -16)) {
 				if (dmgType == 1) {
-					gameLocal.Printf("Health is %i\n", dummyEnt->health);
-					dummyEnt->health -= 10;
+					if ((isCrouching == 1) && (isBlocking == 1)) {
+						gameLocal.Printf("Dummy blocked low\n");
+						gameLocal.Printf("Health is %i\n", dummyEnt->health);
+					}
+					else {
+						gameLocal.Printf("Health is %i\n", dummyEnt->health);
+						dummyEnt->health -= 10;
+					}
 					deleteEntity(lastEnt, entDeleted);
 				}
 				else if (dmgType == 2) {
-					gameLocal.Printf("Health is %i\n", dummyEnt->health);
-					dummyEnt->health -= 10;
+					if ((isStanding == 1) && (isBlocking == 1)) {
+						gameLocal.Printf("Dummy blocked high\n");
+						gameLocal.Printf("Health is %i\n", dummyEnt->health);
+					}
+					else {
+						gameLocal.Printf("Health is %i\n", dummyEnt->health);
+						dummyEnt->health -= 10;
+					}
 					deleteEntity(lastEnt, entDeleted);
 				}
 				else if (dmgType == 3) {
