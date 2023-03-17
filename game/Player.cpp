@@ -3628,7 +3628,8 @@ void idPlayer::UpdateHudStats( idUserInterface *_hud ) {
 		_hud->SetStateFloat	( "player_healthpct", idMath::ClampFloat ( 0.0f, 1.0f, (float)health / (float)inventory.maxHealth ) );
 		_hud->HandleNamedEvent ( "updateHealth" );
 	}
-		
+	
+	//kmw Armor -> Dummy HP
 	temp = _hud->State().GetInt ( "player_armor", "-1" );
 	if ( temp != inventory.armor ) {
 		_hud->SetStateInt ( "player_armorDelta", temp == -1 ? 0 : (temp - inventory.armor) );
@@ -11168,8 +11169,10 @@ void idPlayer::OffsetThirdPersonView( float angle, float range, float height, bo
 	renderView->vieworg = view;
 	renderView->viewaxis = angles.ToMat3() * physicsObj.GetGravityAxis();
 	renderView->viewID = 0;
+	
 
 	player = gameLocal.GetLocalPlayer();
+	//player->DrawHUD(hud);
 	playerPos = player->GetPhysics()->GetOrigin();
 
 	//kmw Side switch

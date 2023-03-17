@@ -1086,7 +1086,7 @@ windowDef Desktop
 				rect	36,244,193,23
 				visible	1
 				forecolor	1,1,1,0.8
-				text	"THIRDMAN"
+				text	"CORPSEMAN"
 				textscale	0.31
 				font	"fonts/lowpixel"
 			}

@@ -3025,6 +3025,12 @@ void Cmd_ShuffleTeams_f( const idCmdArgs& args ) {
 //kmw Training Mode Command Code
 void Cmd_SpawnDummy(const idCmdArgs& args) {
 	//usage: "training"
+	//10: stand		20: crouchblock		11: standblock		21: crouchblock
+
+	if (args.Argc() < 2) {
+		gameLocal.Printf("usage: training <num>		//10,20,11,21\n");
+		return;
+	}
 
 	if (dummyExists == 1) {
 		idEntity* ent = gameLocal.FindEntity(dummyEntName);
@@ -3035,7 +3041,7 @@ void Cmd_SpawnDummy(const idCmdArgs& args) {
 			delete ent;
 			gameLocal.Printf("deleted entity %s\n", dummyEntName);
 			dummyExists = 0;
-			isStanding = 0;
+			isStanding = 1;
 			isCrouching = 0;
 			isBlocking = 0;
 		}
@@ -3045,7 +3051,6 @@ void Cmd_SpawnDummy(const idCmdArgs& args) {
 	idDict		dict;
 
 	player = gameLocal.GetLocalPlayer();
-
 	dict.Set("classname", "mcc_char_kane_strogg");
 	dict.Set("angle", va("180"));
 	org = player->GetPhysics()->GetOrigin() + idAngles(0, 0, 0).ToForward() + idVec3(100, 0, 0);
@@ -3057,13 +3062,40 @@ void Cmd_SpawnDummy(const idCmdArgs& args) {
 	dummyCoords = org;
 
 	idEntity* dummyEnt = NULL;
-	gameLocal.SpawnEntityDef(dict, &dummyEnt);
-	if (dummyEnt) {
-		gameLocal.Printf("spawned entity '%s'\n", dummyEnt->name.c_str());
-		dummyEntName = dummyEnt->name.c_str();
-		dummyExists = 1;
+
+	if ((atoi(args.Argv(1)) == 10)) {
+		gameLocal.SpawnEntityDef(dict, &dummyEnt);
 		isStanding = 1;
+		isCrouching = 0;
+		isBlocking = 0;
 	}
+	else if ((atoi(args.Argv(1)) == 11)) {
+		gameLocal.SpawnEntityDef(dict, &dummyEnt);
+		isStanding = 1;
+		isCrouching = 0;
+		isBlocking = 1;
+	}
+	else if ((atoi(args.Argv(1)) == 20)) {
+		dict.Set("forcePosture", "crouch");
+		gameLocal.SpawnEntityDef(dict, &dummyEnt);
+		isStanding = 0;
+		isCrouching = 1;
+		isBlocking = 0;
+	}
+	else if ((atoi(args.Argv(1)) == 21)) {
+		dict.Set("forcePosture", "crouch");
+		gameLocal.SpawnEntityDef(dict, &dummyEnt);
+		isStanding = 0;
+		isCrouching = 1;
+		isBlocking = 1;
+	}
+	else {
+		gameLocal.Printf("spawned entity '%s'\n", dummyEnt->name.c_str());
+	}
+
+	gameLocal.Printf("spawned entity '%s'\n", dummyEnt->name.c_str());
+	dummyEntName = dummyEnt->name.c_str();
+	dummyExists = 1;
 
 }
 
