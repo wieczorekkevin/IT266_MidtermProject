@@ -3090,7 +3090,8 @@ void Cmd_SpawnDummy(const idCmdArgs& args) {
 		isBlocking = 1;
 	}
 	else {
-		gameLocal.Printf("spawned entity '%s'\n", dummyEnt->name.c_str());
+		gameLocal.Printf("incorrect arg\n");
+		return;
 	}
 
 	gameLocal.Printf("spawned entity '%s'\n", dummyEnt->name.c_str());

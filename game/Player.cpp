@@ -166,11 +166,25 @@ void specialFunc(idPlayer* player, idDict dict, idVec3 org, idVec3 size, int cha
 	//Marineman Special
 	if (character == 0) {
 		gameLocal.Printf("Marineman special\n");
-		attackOut = 0;
-		entDeleted = 1;
-		dmgType = 0;
 
-		
+		dict.Set("classname", "moveable_gib_skull");
+		dict.Set("angle", va("0"));
+		if (sideP1 == 0) {
+			org = player->GetPhysics()->GetOrigin() + idAngles(0, 0, 0).ToForward() + idVec3(-50, 0, 50);
+		}
+		else if (sideP1 == 1) {
+			org = player->GetPhysics()->GetOrigin() + idAngles(0, 0, 0).ToForward() + idVec3(50, 0, 50);
+		}
+		dict.Set("origin", org.ToString());
+		dict.Set(0, 0);
+		dict.SetBool("nodrop", true);
+		dict.SetBool("notPushable", true);
+		dict.SetBool("noimpact", true);
+		size.x = 100;
+		size.y = 100;
+		size.z = 100;
+		dict.Set("size", size.ToString());
+
 	}
 	//Stroggman Special
 	else if (character == 1) {
@@ -11222,10 +11236,12 @@ void idPlayer::OffsetThirdPersonView( float angle, float range, float height, bo
 					if ((isCrouching == 1) && (isBlocking == 1)) {
 						gameLocal.Printf("Dummy blocked low\n");
 						gameLocal.Printf("Health is %i\n", dummyEnt->health);
+						StartSound("snd_powerup_regen", SND_CHANNEL_ANY, 0, false, NULL);
 					}
 					else {
 						gameLocal.Printf("Health is %i\n", dummyEnt->health);
 						dummyEnt->health -= 10;
+						StartSound("snd_pain_medium", SND_CHANNEL_ANY, 0, false, NULL);
 					}
 					deleteEntity(lastEnt, entDeleted);
 				}
@@ -11233,10 +11249,12 @@ void idPlayer::OffsetThirdPersonView( float angle, float range, float height, bo
 					if ((isStanding == 1) && (isBlocking == 1)) {
 						gameLocal.Printf("Dummy blocked high\n");
 						gameLocal.Printf("Health is %i\n", dummyEnt->health);
+						StartSound("snd_powerup_regen", SND_CHANNEL_ANY, 0, false, NULL);
 					}
 					else {
 						gameLocal.Printf("Health is %i\n", dummyEnt->health);
 						dummyEnt->health -= 10;
+						StartSound("snd_pain_medium", SND_CHANNEL_ANY, 0, false, NULL);
 					}
 					deleteEntity(lastEnt, entDeleted);
 				}
