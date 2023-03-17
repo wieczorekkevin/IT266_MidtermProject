@@ -75,6 +75,7 @@ const int IMPULSE_40			= 40;			// repeast last radio chatter
 //kmw: new impulses
 const int IMPULSE_41			= 41;			// kmw: PUNCH
 const int IMPULSE_42			= 42;			// kmw: BLOCK
+const int IMPULSE_43			= 43;			//kmw: SPECIAL
 
 // RAVEN BEGIN
 // bdube: added flashlight

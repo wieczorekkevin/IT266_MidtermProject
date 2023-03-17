@@ -144,6 +144,22 @@ void highPunchFunc(idPlayer* player, idDict dict, idVec3 org, idVec3 size) {
 	}
 }
 
+//kmw Special Attack Function
+void specialFunc(idPlayer* player, idDict dict, idVec3 org, idVec3 size, int character) {
+	//Marineman Special
+	if (character == 0) {
+		gameLocal.Printf("Marineman special\n");
+	}
+	//Stroggman Special
+	else if (character == 1) {
+		gameLocal.Printf("Stroggman special\n");
+	}
+	//Corpseman Special
+	else if (character == 2) {
+		gameLocal.Printf("Corpseman special\n");
+	}
+}
+
 
 /*
 ===============================================================================
@@ -8729,7 +8745,6 @@ void idPlayer::PerformImpulse( int impulse ) {
 		
 		//kmw: Punch
 		case IMPULSE_41: {
-
 			idVec3		org, size;
 			idPlayer*	player;
 			idDict		dict;    
@@ -8785,6 +8800,16 @@ void idPlayer::PerformImpulse( int impulse ) {
 				gameLocal.Printf("MED/HIGH BLOCK!\n");
 			}
 			break;
+		}
+
+		//kmw: Special
+		case IMPULSE_43: {
+			idVec3		org, size;
+			idPlayer* player;
+			idDict		dict;
+
+			player = gameLocal.GetLocalPlayer();
+			specialFunc(player, dict, org, size, characterSelect);
 		}
 	} 
 

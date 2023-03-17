@@ -3022,7 +3022,7 @@ void Cmd_ShuffleTeams_f( const idCmdArgs& args ) {
 	gameLocal.mpGame.ShuffleTeams();
 }
 
-//kmw Training Mode Commands
+//kmw Training Mode Command Code
 void Cmd_SpawnDummy(const idCmdArgs& args) {
 	//usage: "training"
 
@@ -3065,6 +3065,47 @@ void Cmd_SpawnDummy(const idCmdArgs& args) {
 		isStanding = 1;
 	}
 
+}
+
+//kmw Character Select Command Code
+void Cmd_SelectCharacter(const idCmdArgs& args) {
+	int value;
+	idPlayer* player;
+	idVec3		pos;
+	idAngles	ang;
+
+	player = gameLocal.GetLocalPlayer();
+
+	if (args.Argc() < 2) {
+		gameLocal.Printf("usage: character <char_name>\n");
+		return;
+	}
+
+	value = atoi(args.Argv(1));
+	gameLocal.Printf("%i\n", value);
+
+	if (value == 0) {
+		characterSelect = 0;
+		gameLocal.Printf("You are Marineman.\n");
+		player->spawnArgs.Set("model", "model_player_marine");
+	}
+	else if (value == 1) {
+		characterSelect = 1;
+		gameLocal.Printf("You are Stroggman.\n");
+		player->spawnArgs.Set("model", "model_player_strogg");
+	}
+	else if (value == 2) {
+		characterSelect = 2;
+		gameLocal.Printf("You are Corpseman.\n");
+		player->spawnArgs.Set("model", "model_player_corpse");
+	}
+	else {
+		gameLocal.Printf("no such character exists\n");
+		return;
+	}
+	pos = player->GetPhysics()->GetOrigin();
+	ang = player->viewAngles;
+	player->SpawnToPoint(pos, ang);
 }
 
 #ifndef _FINAL
@@ -3279,7 +3320,10 @@ void idGameLocal::InitConsoleCommands( void ) {
 // RITUAL END
 
 //kmw Training Mode Dummy Commands
-	cmdSystem->AddCommand( "training",				Cmd_SpawnDummy,				CMD_FL_GAME|CMD_FL_CHEAT,				"Spawn training mode dummy");
+	cmdSystem->AddCommand( "training",				Cmd_SpawnDummy,				CMD_FL_GAME|CMD_FL_CHEAT,				"Spawn training mode dummy" );
+
+//kmw Character Select Commands
+	cmdSystem->AddCommand("character",				Cmd_SelectCharacter,		CMD_FL_GAME | CMD_FL_CHEAT,				"Select your character" );
 
 }
 

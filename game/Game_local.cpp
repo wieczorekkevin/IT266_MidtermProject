@@ -23,6 +23,7 @@ int isStanding = 1;
 int isCrouching = 0;
 int isBlocking = 0;
 idVec3 dummyCoords;
+int characterSelect = 0;	//0 = Marineman		1 = Stroggman		2 = Thirdman
 
 #ifdef GAME_DLL
 
