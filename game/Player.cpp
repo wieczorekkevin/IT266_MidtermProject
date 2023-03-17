@@ -113,6 +113,7 @@ void lowPunchFunc(idPlayer* player, idDict dict, idVec3 org, idVec3 size) {
 
 	idEntity* newEnt = NULL;
 	gameLocal.SpawnEntityDef(dict, &newEnt);
+	
 	if (newEnt) {
 		gameLocal.Printf("spawned entity '%s'\n", newEnt->name.c_str());
 		lastEnt = newEnt->name.c_str();
@@ -180,11 +181,13 @@ void specialFunc(idPlayer* player, idDict dict, idVec3 org, idVec3 size, int cha
 		dict.SetBool("nodrop", true);
 		dict.SetBool("notPushable", true);
 		dict.SetBool("noimpact", true);
-		size.x = 100;
-		size.y = 100;
-		size.z = 100;
-		dict.Set("size", size.ToString());
+		
 
+		idEntity* newEnt = NULL;
+		gameLocal.SpawnEntityDef(dict, &newEnt);
+
+		
+		
 	}
 	//Stroggman Special
 	else if (character == 1) {
