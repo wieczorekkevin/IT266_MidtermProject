@@ -11225,7 +11225,6 @@ void idPlayer::OffsetThirdPersonView( float angle, float range, float height, bo
 	if ((attackOut == 1) && (dummyExists == 1)) {
 		idEntity* dummyEnt = gameLocal.FindEntity(dummyEntName);
 		idEntity* attackEnt = gameLocal.FindEntity(lastEnt);
-
 		if ((dummyEnt) && (attackEnt)) {
 			idVec3 attackCoords = attackEnt->GetPhysics()->GetOrigin();
 
@@ -11278,6 +11277,37 @@ void idPlayer::OffsetThirdPersonView( float angle, float range, float height, bo
 			}
 		}
 	}
+
+	//kmw Updating HUD
+	player->HideCrosshair();
+	if (dummyExists == 1) {
+		idEntity* hudEnt = gameLocal.FindEntity(dummyEntName);
+		if (hudEnt) {
+			if (isStanding == 1) {
+				hud->SetStateString("stance", "Standing");
+			}
+			else if (isCrouching == 1) {
+				hud->SetStateString("stance", "Crouching");
+			}
+
+			if (isBlocking == 1) {
+				hud->SetStateString("blocking", "Yes");
+			}
+			else if (isBlocking == 0) {
+				hud->SetStateString("blocking", "No");
+			}
+
+			hud->SetStateInt("dummyHP", hudEnt->health);
+		}
+	}
+	else {
+		hud->SetStateString("stance", "N/A");
+		hud->SetStateString("blocking", "N/A");
+		hud->SetStateInt("dummyHP", 0);
+	}
+		
+
+	
 	
 }
 
