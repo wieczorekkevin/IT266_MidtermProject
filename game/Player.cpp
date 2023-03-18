@@ -11317,6 +11317,22 @@ void idPlayer::OffsetThirdPersonView( float angle, float range, float height, bo
 		hud->SetStateInt("dummyHP", 0);
 	}
 
+
+	//kmw Updating Help HUD
+	if (helpOn == 0) {
+		hud->SetStateString("helpBox1", "");
+		hud->SetStateString("helpBox2", "");
+		hud->SetStateString("helpBox3", "");
+		hud->SetStateString("helpBox4", "");
+		hud->SetStateString("helpBox5", "");
+	}
+	else if (helpOn == 1) {
+		hud->SetStateString("helpBox1", "HOW TO PLAY");
+		hud->SetStateString("helpBox2", "\"o\" to attack High/Low");
+		hud->SetStateString("helpBox5", "\"i\" to use Special");
+		hud->SetStateString("helpBox4", "\"training <num>\" spawns a dummy");
+		hud->SetStateString("helpBox3", "\"character <num>\" changes fighter");
+	}
 }
 
 /*

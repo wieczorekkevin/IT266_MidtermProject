@@ -585,4 +585,54 @@ windowDef Desktop
 		text	"gui::fighter"
 		textscale	0.4
 	}
+	windowDef HelpTitle1
+	{
+		rect	221,140,204,28
+		visible	1
+		forecolor	1,1,1,1
+		text	"gui::helpBox1"
+		textscale	0.3
+		font	"fonts/lowpixel"
+		textalign	1
+	}
+	windowDef HelpTitle2
+	{
+		rect	221,182,204,28
+		visible	1
+		forecolor	1,1,1,1
+		text	"gui::helpBox2"
+		textscale	0.3
+		font	"fonts/lowpixel"
+		textalign	1
+	}
+	windowDef HelpTitle5
+	{
+		rect	222,220,204,28
+		visible	1
+		forecolor	1,1,1,1
+		text	"gui::helpBox5"
+		textscale	0.3
+		font	"fonts/lowpixel"
+		textalign	1
+	}
+	windowDef HelpTitle3
+	{
+		rect	165,257,325,28
+		visible	1
+		forecolor	1,1,1,1
+		text	"gui::helpBox3"
+		textscale	0.3
+		font	"fonts/lowpixel"
+		textalign	1
+	}
+	windowDef HelpTitle4
+	{
+		rect	165,296,325,28
+		visible	1
+		forecolor	1,1,1,1
+		text	"gui::helpBox4"
+		textscale	0.3
+		font	"fonts/lowpixel"
+		textalign	1
+	}
 }

@@ -3141,6 +3141,19 @@ void Cmd_SelectCharacter(const idCmdArgs& args) {
 	player->SpawnToPoint(pos, ang);
 }
 
+//kmw Help Code
+
+void Cmd_HelpMenu(const idCmdArgs& args) {
+	if (helpOn == 0) {
+		helpOn = 1;
+		gameLocal.Printf("Turned on Help Screen. Type helpmod again to remove.\n");
+	}
+	else if (helpOn == 1) {
+		helpOn = 0;
+		gameLocal.Printf("Turned off Help Screen\n");
+	}
+}
+
 #ifndef _FINAL
 void Cmd_ClientOverflowReliable_f( const idCmdArgs& args ) {
 	idBitMsg	outMsg;
@@ -3358,6 +3371,8 @@ void idGameLocal::InitConsoleCommands( void ) {
 //kmw Character Select Commands
 	cmdSystem->AddCommand("character",				Cmd_SelectCharacter,		CMD_FL_GAME | CMD_FL_CHEAT,				"Select your character" );
 
+//kmw Help Menu Commands
+	cmdSystem->AddCommand("helpmod",				Cmd_HelpMenu,				CMD_FL_GAME | CMD_FL_CHEAT,				"Opens help menu for mod" );
 }
 
 /*

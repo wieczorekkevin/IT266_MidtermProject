@@ -1127,7 +1127,7 @@ windowDef Desktop
 				rect	239,181,345,139
 				visible	1
 				forecolor	1,1,1,0.6
-				text	"#str_200019"
+				text	"test"
 				textscale	0.25
 				font	"fonts/lowpixel"
 			}
