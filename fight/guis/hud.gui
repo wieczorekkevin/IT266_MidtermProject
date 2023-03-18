@@ -577,4 +577,12 @@ windowDef Desktop
 		text	"gui::dummyHP"
 		textscale	0.4
 	}
+	windowDef CharacterTitle
+	{
+		rect	2,450,171,27
+		visible	1
+		forecolor	1,1,1,1
+		text	"gui::fighter"
+		textscale	0.4
+	}
 }

@@ -11213,6 +11213,17 @@ void idPlayer::OffsetThirdPersonView( float angle, float range, float height, bo
 	//player->DrawHUD(hud);
 	playerPos = player->GetPhysics()->GetOrigin();
 
+	//kmw Character Choice HUD
+	if (characterSelect == 0) {
+		hud->SetStateString("fighter", "MARINEMAN");
+	}
+	else if (characterSelect == 1) {
+		hud->SetStateString("fighter", "STROGGMAN");
+	}
+	else if (characterSelect == 2) {
+		hud->SetStateString("fighter", "CORPSEMAN");
+	}
+
 	//kmw Side switch
 	if ((dummyExists == 1) && (playerPos.x > dummyCoords.x)) {
 		sideP1 = 0;
@@ -11278,7 +11289,7 @@ void idPlayer::OffsetThirdPersonView( float angle, float range, float height, bo
 		}
 	}
 
-	//kmw Updating HUD
+	//kmw Updating Training HUD
 	player->HideCrosshair();
 	if (dummyExists == 1) {
 		idEntity* hudEnt = gameLocal.FindEntity(dummyEntName);
@@ -11305,10 +11316,7 @@ void idPlayer::OffsetThirdPersonView( float angle, float range, float height, bo
 		hud->SetStateString("blocking", "N/A");
 		hud->SetStateInt("dummyHP", 0);
 	}
-		
 
-	
-	
 }
 
 /*
