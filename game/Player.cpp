@@ -40,6 +40,7 @@ int entDeleted = 1;
 float cooldown = 0.0;
 const char* lastEnt;
 int sideP1 = 1;		//1 is left side, 0 is right side
+int inGrab = 0;
 
 //kmw: Functions
 
@@ -185,8 +186,12 @@ void specialFunc(idPlayer* player, idDict dict, idVec3 org, idVec3 size, int cha
 
 		idEntity* newEnt = NULL;
 		gameLocal.SpawnEntityDef(dict, &newEnt);
-
-		
+		if (newEnt) {
+			gameLocal.Printf("spawned entity '%s'\n", newEnt->name.c_str());
+			lastEnt = newEnt->name.c_str();
+			cooldownFunc(newEnt->name.c_str(), attackType);
+		}
+		entDeleted = 0;
 		
 	}
 	//Stroggman Special
@@ -8873,6 +8878,11 @@ void idPlayer::PerformImpulse( int impulse ) {
 		
 		//kmw: Punch
 		case IMPULSE_41: {
+
+			if (inGrab == 1) {
+				return;
+			}
+
 			idVec3		org, size;
 			idPlayer*	player;
 			idDict		dict;    
@@ -8921,6 +8931,11 @@ void idPlayer::PerformImpulse( int impulse ) {
 
 		//kmw: Block
 		case IMPULSE_42: {
+
+			if (inGrab == 1) {
+				return;
+			}
+
 			if (physicsObj.IsCrouching()) {
 				gameLocal.Printf("LOW BLOCK!\n");
 			}
@@ -8932,6 +8947,11 @@ void idPlayer::PerformImpulse( int impulse ) {
 
 		//kmw: Special
 		case IMPULSE_43: {
+
+			if (inGrab == 1) {
+				return;
+			}
+
 			idVec3		org, size;
 			idPlayer* player;
 			idDict		dict;
@@ -8941,7 +8961,9 @@ void idPlayer::PerformImpulse( int impulse ) {
 				SetAnimState(ANIMCHANNEL_TORSO, "Torso_RaiseWeapon", 2);	//2 to 0
 				UpdateState();
 				if (physicsObj.IsCrouching()) {
-					specialFunc(player, dict, org, size, characterSelect, 1);
+					if (characterSelect != 0) {
+						specialFunc(player, dict, org, size, characterSelect, 1);
+					}
 				}
 				else {
 					specialFunc(player, dict, org, size, characterSelect, 0);
@@ -11273,7 +11295,93 @@ void idPlayer::OffsetThirdPersonView( float angle, float range, float height, bo
 				}
 				else if (dmgType == 3) {
 					gameLocal.Printf("Health is %i\n", dummyEnt->health);
-					dummyEnt->health -= 30;
+
+					if (isCrouching == 1) {
+						gameLocal.Printf("Missed the grab!\n");
+						deleteEntity(lastEnt, entDeleted);
+					}
+					else {
+						int tempHealth;
+						idVec3 tempOrg;
+						idDict tempDict;
+
+							tempHealth = dummyEnt->health;
+							char* tempName;
+							strcpy(tempName, dummyEntName);
+							strcat(tempName, "_head");
+							gameLocal.Printf("%s\n", tempName);
+							const char* finalName = tempName;
+							idEntity* dummyEntHead = gameLocal.FindEntity(finalName);
+							delete dummyEnt;
+							delete dummyEntHead;
+
+
+							gameLocal.Printf("deleted entity %s\n", dummyEntName);
+
+							tempDict.Set("classname", "mcc_char_kane_strogg");
+							tempDict.Set("angle", va("180"));
+
+							if (sideP1 == 1) {
+								tempOrg = player->GetPhysics()->GetOrigin() + idAngles(0, 0, 0).ToForward() + idVec3(-200, 0, 150);
+							}
+							else if (sideP1 == 0) {
+								tempOrg = player->GetPhysics()->GetOrigin() + idAngles(0, 0, 0).ToForward() + idVec3(200, 0, 150);
+							}
+							tempOrg = player->GetPhysics()->GetOrigin() + idAngles(0, 0, 0).ToForward() + idVec3(100, 0, 0);
+							tempDict.Set("origin", tempOrg.ToString());
+							
+							switch (tempHealth) {
+							case 100:
+								tempDict.Set("health", "100");
+								break;
+							case 90:
+								tempDict.Set("health", "90");
+								break;
+							case 80:
+								tempDict.Set("health", "80");
+								break;
+							case 70:
+								tempDict.Set("health", "70");
+								break;
+							case 60:
+								tempDict.Set("health", "60");
+								break;
+							case 50:
+								tempDict.Set("health", "50");
+								break;
+							case 40:
+								tempDict.Set("health", "40");
+								break;
+							case 30:
+								tempDict.Set("health", "30");
+								break;
+							case 20:
+								tempDict.Set("health", "20");
+								break;
+							case 10:
+								tempDict.Set("health", "10");
+								break;
+							default:
+								tempDict.Set("health", "0");
+								break;
+							}
+							tempDict.Set(0, 0);
+							tempDict.SetBool("notPushable", true);
+
+							gameLocal.Printf("got to before pointer entity\n");
+							idEntity* newdummyEnt = NULL;
+							gameLocal.Printf("spawning entity\n");
+							gameLocal.SpawnEntityDef(tempDict, &newdummyEnt);
+							dummyCoords = tempOrg;
+							gameLocal.Printf("spawned entity '%s'\n", newdummyEnt->name.c_str());
+							dummyEntName = newdummyEnt->name.c_str();
+							dummyExists = 1;
+
+							inGrab = 1;
+
+
+					}
+
 					deleteEntity(lastEnt, entDeleted);
 				}
 			}
@@ -11285,6 +11393,19 @@ void idPlayer::OffsetThirdPersonView( float angle, float range, float height, bo
 				dummyCoords.y = 0;
 				dummyCoords.z = 0;
 				dummyExists = 0;
+			}
+		}
+	}
+
+	//kmw Grab Special Extra Code
+	if (inGrab == 1) {
+		idVec3 playerHeight = player->GetPhysics()->GetOrigin();
+		if (dummyCoords.z == playerHeight.z) {
+			gameLocal.Printf("Grab finished.\n");
+			inGrab = 0;
+			idEntity* dummyEnt = gameLocal.FindEntity(dummyEntName);
+			if (dummyEnt) {
+				dummyEnt->health -= 30;
 			}
 		}
 	}
