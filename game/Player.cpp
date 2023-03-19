@@ -41,7 +41,8 @@ float cooldown = 0.0;
 const char* lastEnt;
 int sideP1 = 1;		//1 is left side, 0 is right side
 
-int inGrab = 0;
+int onFire = 0;
+int onFireCount = 0;
 
 int corpseSpecial = 0;
 int corpseCount = 0;
@@ -8725,7 +8726,6 @@ void idPlayer::PerformImpulse( int impulse ) {
 	if ( ((impulse == IMPULSE_41) || (impulse == IMPULSE_42) || (impulse == IMPULSE_43)) && (entDeleted == 0)) {
 		corpseCount = 0;
 		corpseSpecial = 0;
-		inGrab = 0;
 		deleteEntity(lastEnt, entDeleted);
 	}
 
@@ -8867,10 +8867,6 @@ void idPlayer::PerformImpulse( int impulse ) {
 		//kmw: Punch
 		case IMPULSE_41: {
 
-			if (inGrab == 1) {
-				return;
-			}
-
 			idVec3		org, size;
 			idPlayer*	player;
 			idDict		dict;    
@@ -8920,8 +8916,13 @@ void idPlayer::PerformImpulse( int impulse ) {
 		//kmw: Block
 		case IMPULSE_42: {
 
-			if (inGrab == 1) {
-				return;
+			if (dummyExists == 1) {
+				if (isBlocking == 1) {
+					isBlocking = 0;
+				}
+				else if (isBlocking == 0) {
+					isBlocking = 1;
+				}
 			}
 
 			if (physicsObj.IsCrouching()) {
@@ -8935,10 +8936,6 @@ void idPlayer::PerformImpulse( int impulse ) {
 
 		//kmw: Special
 		case IMPULSE_43: {
-
-			if (inGrab == 1) {
-				return;
-			}
 
 			idVec3		org, size;
 			idPlayer* player;
@@ -11284,93 +11281,18 @@ void idPlayer::OffsetThirdPersonView( float angle, float range, float height, bo
 				else if (dmgType == 3) {
 					gameLocal.Printf("Health is %i\n", dummyEnt->health);
 
-					if (isCrouching == 1) {
-						gameLocal.Printf("Missed the grab!\n");
-						deleteEntity(lastEnt, entDeleted);
+					if (isBlocking == 1) {
+						gameLocal.Printf("Dummy blocked special\n");
+						gameLocal.Printf("Health is %i\n", dummyEnt->health);
+						StartSound("snd_powerup_regen", SND_CHANNEL_ANY, 0, false, NULL);
 					}
 					else {
-						int tempHealth;
-						idVec3 tempOrg;
-						idDict tempDict;
-						
-						tempHealth = dummyEnt->health;
-						deleteEntity(lastEnt, entDeleted);
-
-						//char* tempName;
-						//strcpy(tempName, dummyEntName);
-						//strcat(tempName, "_head");
-						//idEntity* dummyEntHead = gameLocal.FindEntity((const char*)tempName);
-
-						//if (dummyEntHead) {
-						//	delete dummyEntHead;
-						//}
-
-						delete dummyEnt;
-						dummyCoords.x = 0;
-						dummyCoords.y = 0;
-						dummyCoords.z = 0;
-
-						tempDict.Set("classname", "mcc_char_kane_strogg");
-						tempDict.Set("angle", va("180"));
-
-						if (sideP1 == 1) {
-							tempOrg = player->GetPhysics()->GetOrigin() + idAngles(0, 0, 0).ToForward() + idVec3(-200, 0, 0);
-						}
-						else if (sideP1 == 0) {
-							tempOrg = player->GetPhysics()->GetOrigin() + idAngles(0, 0, 0).ToForward() + idVec3(200, 0, 0);
-						}
-						tempDict.Set("origin", tempOrg.ToString());
+						gameLocal.Printf("Health is %i\n", dummyEnt->health);
+						dummyEnt->health -= 5;
+						StartSound("snd_pain_medium", SND_CHANNEL_ANY, 0, false, NULL);
+						onFire = 1;
 							
-						switch (tempHealth) {
-							case 100:
-								tempDict.Set("health", "100");
-								break;
-							case 90:
-								tempDict.Set("health", "90");
-								break;
-							case 80:
-								tempDict.Set("health", "80");
-								break;
-							case 70:
-								tempDict.Set("health", "70");
-								break;
-							case 60:
-								tempDict.Set("health", "60");
-								break;
-							case 50:
-								tempDict.Set("health", "50");
-								break;
-							case 40:
-								tempDict.Set("health", "40");
-								break;
-							case 30:
-								tempDict.Set("health", "30");
-								break;
-							case 20:
-								tempDict.Set("health", "20");
-								break;
-							case 10:
-								tempDict.Set("health", "10");
-								break;
-							default:
-								tempDict.Set("health", "0");
-								break;
-							}
-						tempDict.Set(0, 0);
-						tempDict.SetBool("notPushable", true);
-
-						gameLocal.Printf("got to before pointer entity\n");
-						idEntity* newdummyEnt = NULL;
-						gameLocal.SpawnEntityDef(tempDict, &newdummyEnt);
-						dummyCoords = tempOrg;
-						gameLocal.Printf("spawned entity '%s'\n", newdummyEnt->name.c_str());
-						dummyEntName = newdummyEnt->name.c_str();
-						dummyExists = 1;
-
-						inGrab = 1;
-
 					}
-
 					deleteEntity(lastEnt, entDeleted);
 				}
 				else if (dmgType == 4) {
@@ -11453,21 +11375,41 @@ void idPlayer::OffsetThirdPersonView( float angle, float range, float height, bo
 		}
 	}
 
-	//kmw Grab Special Extra Code
-	if (inGrab == 1) {
-		idVec3 playerHeight = player->GetPhysics()->GetOrigin();
-		if (dummyCoords.z == playerHeight.z) {
-			gameLocal.Printf("Grab finished.\n");
-			
-			idEntity* dummyEnt = gameLocal.FindEntity(dummyEntName);
-			if (dummyEnt) {
-				dummyEnt->health -= 30;
-			}
-			gameLocal.Printf("got here\n");
-			attackOut = 0;
-			dmgType = 0;
-			inGrab = 0;
+	//kmw On Fire Special Code
+	if (onFire == 1) {
+		idEntity* dummyEnt = gameLocal.FindEntity(dummyEntName);
+		float updateTime = 500.0f;
+
+		gameLocal.Printf("Checking count\n");
+		if (onFireCount >= 5) {
+			onFire = 0;
+			onFireCount = 0;
 		}
+		else {
+			int localTimeInt = (int)gameLocal.time;
+			int updateTimeInt = (int)updateTime;
+			int result = localTimeInt % updateTimeInt;
+			if (result == 0) {
+				if (dummyEnt) {
+					dummyEnt->health -= 5;
+					StartSound("snd_pain_medium", SND_CHANNEL_ANY, 0, false, NULL);
+					onFireCount += 1;
+
+					if (dummyEnt->health <= 0) {
+						delete dummyEnt;
+						dummyCoords.x = 0;
+						dummyCoords.y = 0;
+						dummyCoords.z = 0;
+						dummyExists = 0;
+					}
+				}
+			}
+		}
+	}
+
+	if (dummyExists == 0) {
+		onFire = 0;
+		onFireCount = 0;
 	}
 
 	//kmw Updating Training HUD

@@ -11,15 +11,16 @@ It is extremely jank and wack, but was a lot of fun to work on nonetheless.
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 BASIC MECHANICS
 
-Each fighter has the same normal attacks, a Punch, where you can hit opponents with a Low Punch when you're crouching, 
+Each fighter has the same normal attacks, a Punch, where you can hit opponents with a Low Punch when you're crouching 
 or a High Punch when standing. If the opponent is blocking while standing, High Punches will do no damage, so hit them 
 with a Low Punch. The opposite is true, too! Make sure you're hitting the right spot!
 
 Fighters also come with one Special move. This is unique to the character. 
 
-Marineman's Special
+Marineman's Special can only be down standing, and it inflicts Burn on the opponent. When burning, they'll take some damage every few seconds, 
+even when blocking.
 
-Stroggman's Special doesn't do damage, but you can teleport in front of or behind enemies, depending on whether Crouch is held or not.
+Stroggman's Special doesn't do damage, but you can teleport in front of or behind the opponent, depending on whether Crouch is held or not.
 
 Corpseman's Special shoots a slow moving projectile that does more damage than a normal attack.
 
@@ -33,7 +34,7 @@ S : Down/Crouch
 
 O : Punch
 I : Special
-P : Block
+P : Block		//as of now, toggles blocking status of the training dummy
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 COMMANDS
@@ -54,9 +55,3 @@ character <num> - changes your fighter to the selected fighter.
 	"character 0" - changes your character to Marineman
 	"character 1" - changes your character to Stroggman
 	"character 2" - changes your character to Corpseman
-
-
-
-
-
-
