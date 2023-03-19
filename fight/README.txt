@@ -21,7 +21,7 @@ Marineman's Special
 
 Stroggman's Special doesn't do damage, but you can teleport in front of or behind enemies, depending on whether Crouch is held or not.
 
-Corpseman's Special
+Corpseman's Special shoots a slow moving projectile that does more damage than a normal attack.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 CONTROLS
